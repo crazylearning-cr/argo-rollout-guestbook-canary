@@ -40,19 +40,28 @@ spec:
               cpu: "500m"
               memory: "256Mi"
   strategy:
-    canary:
-      steps:
-        - pause: {}        # ⬅ Pause BEFORE any traffic shift (0% canary, 100% stable)
-        - setWeight: 20
-        - pause: {}
-        - setWeight: 50
-        - pause: {}
-        - setWeight: 100
-      canaryService: guestbook-ui-canary
-      stableService: guestbook-ui
-      trafficRouting:
-        nginx:
-          stableIngress: guestbook-ui-ingress
+  canary:
+    steps:
+      # 1) Start some canary pods, but DON'T send prod traffic yet
+      - setCanaryScale:
+          replicas: 1
+
+      # 2) Pause so testers can hit /preview (canary only)
+      - pause: {}
+
+      # 3) Now start shifting prod traffic
+      - setWeight: 20
+      - pause: {}
+
+      - setWeight: 50
+      - pause: {}
+
+      - setWeight: 100
+    canaryService: guestbook-ui-canary
+    stableService: guestbook-ui
+    trafficRouting:
+      nginx:
+        stableIngress: guestbook-ui-ingress
 ---
 apiVersion: v1
 kind: Service
