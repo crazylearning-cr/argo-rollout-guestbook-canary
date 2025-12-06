@@ -12,10 +12,10 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: default
-syncPolicy:
-  automated:
-    prune: true          # delete resources removed from Git
-    selfHeal: true       # revert out-of-band changes
-  syncOptions:
-    - CreateNamespace=true   # if you deploy to non-existing ns in future
+  syncPolicy:
+    automated:
+      prune: true          # delete resources removed from Git
+      selfHeal: true       # revert out-of-band changes
+    syncOptions:
+      - CreateNamespace=true   # if you deploy to non-existing ns in future
 
