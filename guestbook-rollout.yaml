@@ -42,7 +42,6 @@ spec:
   strategy:
     canary:
       steps:
-        - pause: {}        # ⬅ Pause BEFORE any traffic shift (0% canary, 100% stable)
         - setWeight: 20
         - pause: {}
         - setWeight: 50
@@ -78,7 +77,6 @@ spec:
   selector:
     app: guestbook-ui
 ---
-# Main ingress used by Argo Rollouts for weighted traffic
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -99,26 +97,4 @@ spec:
                 name: guestbook-ui
                 port:
                   number: 80
----
-# Preview ingress: always sends traffic to canary service
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: guestbook-ui-canary-preview
-  namespace: default
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-spec:
-  ingressClassName: nginx
-  rules:
-    - http:
-        paths:
-          - path: /preview(/|$)(.*)
-            pathType: ImplementationSpecific
-            backend:
-              service:
-                name: guestbook-ui-canary
-                port:
-                  number: 80
+
